@@ -1,0 +1,31 @@
+{
+  "name": "superbalist/php-pubsub-google-cloud",
+  "description": "A Google Cloud adapter for the php-pubsub package",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Superbalist.com a division of Takealot Online (Pty) Ltd",
+      "email": "info@superbalist.com"
+    }
+  ],
+  "require": {
+    "php": ">=5.6.0",
+    "superbalist/php-pubsub": "^1.0",
+    "google/cloud": "^0.7.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Superbalist\\PubSub\\GoogleCloud\\": "src/",
+      "Tests\\": "tests/"
+    }
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.0-dev"
+    }
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^5.5",
+    "mockery/mockery": "^0.9.5"
+  }
+}
