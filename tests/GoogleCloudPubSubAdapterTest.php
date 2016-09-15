@@ -101,14 +101,17 @@ class GoogleCloudPubSubAdapterTest extends TestCase
         $subscription->shouldReceive('pull')
             ->once()
             ->andReturn($messageBatch1);
+        $subscription->shouldReceive('acknowledge')
+            ->with(1)
+            ->once();
+        $subscription->shouldReceive('acknowledge')
+            ->with(2)
+            ->once();
         $subscription->shouldReceive('pull')
             ->once()
             ->andReturn($messageBatch2);
-        $subscription->shouldReceive('acknowledgeBatch')
-            ->with([1, 2])
-            ->once();
-        $subscription->shouldReceive('acknowledgeBatch')
-            ->with([3])
+        $subscription->shouldReceive('acknowledge')
+            ->with(3)
             ->once();
 
         $topic = Mockery::mock(Topic::class);
@@ -173,14 +176,17 @@ class GoogleCloudPubSubAdapterTest extends TestCase
         $subscription->shouldReceive('pull')
             ->once()
             ->andReturn($messageBatch1);
+        $subscription->shouldReceive('acknowledge')
+            ->with(1)
+            ->once();
+        $subscription->shouldReceive('acknowledge')
+            ->with(2)
+            ->once();
         $subscription->shouldReceive('pull')
             ->once()
             ->andReturn($messageBatch2);
-        $subscription->shouldReceive('acknowledgeBatch')
-            ->with([1, 2])
-            ->once();
-        $subscription->shouldReceive('acknowledgeBatch')
-            ->with([3])
+        $subscription->shouldReceive('acknowledge')
+            ->with(3)
             ->once();
 
         $topic = Mockery::mock(Topic::class);

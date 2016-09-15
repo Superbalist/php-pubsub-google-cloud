@@ -44,14 +44,9 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
         $isSubscriptionLoopActive = true;
 
         while ($isSubscriptionLoopActive) {
-            $ackIds = [];
-            $payloads = [];
-
             $messages = $subscription->pull();
 
             foreach ($messages as $message) {
-                $ackIds[] = $message['ackId'];
-
                 // the cloud library base64 encodes messages
                 $payload = base64_decode($message['message']['data']);
                 $payload = Utils::unserializeMessagePayload($payload);
@@ -59,16 +54,10 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
                 if ($payload === 'unsubscribe') {
                     $isSubscriptionLoopActive = false;
                 } else {
-                    $payloads[] = $payload;
+                    call_user_func($handler, $payload);
                 }
-            }
 
-            if (!empty($ackIds)) {
-                $subscription->acknowledgeBatch($ackIds);
-            }
-
-            foreach ($payloads as $payload) {
-                call_user_func($handler, $payload);
+                $subscription->acknowledge($message['ackId']);
             }
         }
     }
