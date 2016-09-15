@@ -14,11 +14,25 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
     protected $client;
 
     /**
-     * @param PubSubClient $client
+     * @var bool
      */
-    public function __construct(PubSubClient $client)
+    protected $autoCreateTopics;
+
+    /**
+     * @var bool
+     */
+    protected $autoCreateSubscriptions;
+
+    /**
+     * @param PubSubClient $client
+     * @param bool $autoCreateTopics
+     * @param bool $autoCreateSubscriptions
+     */
+    public function __construct(PubSubClient $client, $autoCreateTopics = true, $autoCreateSubscriptions = true)
     {
         $this->client = $client;
+        $this->autoCreateTopics = $autoCreateTopics;
+        $this->autoCreateSubscriptions = $autoCreateSubscriptions;
     }
 
     /**
@@ -29,6 +43,46 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
     public function getClient()
     {
         return $this->client;
+    }
+
+    /**
+     * Set whether or not topics will be auto created.
+     *
+     * @param bool $autoCreateTopics
+     */
+    public function setAutoCreateTopics($autoCreateTopics)
+    {
+        $this->autoCreateTopics = $autoCreateTopics;
+    }
+
+    /**
+     * Check whether or not topics will be auto created.
+     *
+     * @return bool
+     */
+    public function areTopicsAutoCreated()
+    {
+        return $this->autoCreateTopics;
+    }
+
+    /**
+     * Set whether or not subscriptions will be auto created.
+     *
+     * @param bool $autoCreateSubscriptions
+     */
+    public function setAutoCreateSubscriptions($autoCreateSubscriptions)
+    {
+        $this->autoCreateSubscriptions = $autoCreateSubscriptions;
+    }
+
+    /**
+     * Check whether or not subscriptions will be auto created.
+     *
+     * @return bool
+     */
+    public function areSubscriptionsAutoCreated()
+    {
+        return $this->autoCreateSubscriptions;
     }
 
     /**
@@ -85,7 +139,7 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
     protected function getTopicForChannel($channel)
     {
         $topic = $this->client->topic($channel);
-        if (!$topic->exists()) {
+        if ($this->autoCreateTopics && !$topic->exists()) {
             $topic->create();
         }
         return $topic;
@@ -103,7 +157,7 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
     {
         $topic = $this->getTopicForChannel($channel);
         $subscription = $topic->subscription($channel);
-        if (!$subscription->exists()) {
+        if ($this->autoCreateSubscriptions && !$subscription->exists()) {
             $subscription->create();
         }
         return $subscription;
