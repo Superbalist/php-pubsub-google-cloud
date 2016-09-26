@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.2 - 2016-09-26
+
+* Allow for google/cloud ^0.8.0 and ^0.9.0
+
 ## 1.0.1 - 2016-09-15
 
 * Ack messages individually after callable returns successfully
