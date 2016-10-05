@@ -172,7 +172,7 @@ class GoogleCloudPubSubAdapterTest extends TestCase
             ->andReturn(true);
         $topic->shouldNotHaveReceived('create');
         $topic->shouldReceive('subscription')
-            ->with('default')
+            ->with('default.channel_name')
             ->once()
             ->andReturn($subscription);
 
@@ -247,7 +247,7 @@ class GoogleCloudPubSubAdapterTest extends TestCase
             ->andReturn(true);
         $topic->shouldNotHaveReceived('create');
         $topic->shouldReceive('subscription')
-            ->with('default')
+            ->with('default.channel_name')
             ->once()
             ->andReturn($subscription);
 
@@ -320,7 +320,7 @@ class GoogleCloudPubSubAdapterTest extends TestCase
             ->andReturn(true);
         $topic->shouldNotHaveReceived('create');
         $topic->shouldReceive('subscription')
-            ->with('default')
+            ->with('default.channel_name')
             ->once()
             ->andReturn($subscription);
 
