@@ -18,6 +18,16 @@ class GoogleCloudPubSubAdapterTest extends TestCase
         $this->assertSame($client, $adapter->getClient());
     }
 
+    public function testGetSetClientIdentifier()
+    {
+        $client = Mockery::mock(PubSubClient::class);
+        $adapter = new GoogleCloudPubSubAdapter($client);
+        $this->assertNull($adapter->getClientIdentifier());
+
+        $adapter->setClientIdentifier('my_identifier');
+        $this->assertEquals('my_identifier', $adapter->getClientIdentifier());
+    }
+
     public function testGetSetAutoCreateTopics()
     {
         $client = Mockery::mock(PubSubClient::class);
@@ -104,7 +114,7 @@ class GoogleCloudPubSubAdapterTest extends TestCase
             ->once()
             ->andReturn($topic);
 
-        $adapter = new GoogleCloudPubSubAdapter($client, false);
+        $adapter = new GoogleCloudPubSubAdapter($client, null, false);
 
         $adapter->publish('channel_name', ['hello' => 'world']);
     }
@@ -162,7 +172,7 @@ class GoogleCloudPubSubAdapterTest extends TestCase
             ->andReturn(true);
         $topic->shouldNotHaveReceived('create');
         $topic->shouldReceive('subscription')
-            ->with('channel_name')
+            ->with('default')
             ->once()
             ->andReturn($subscription);
 
@@ -237,7 +247,7 @@ class GoogleCloudPubSubAdapterTest extends TestCase
             ->andReturn(true);
         $topic->shouldNotHaveReceived('create');
         $topic->shouldReceive('subscription')
-            ->with('channel_name')
+            ->with('default')
             ->once()
             ->andReturn($subscription);
 
@@ -310,7 +320,7 @@ class GoogleCloudPubSubAdapterTest extends TestCase
             ->andReturn(true);
         $topic->shouldNotHaveReceived('create');
         $topic->shouldReceive('subscription')
-            ->with('channel_name')
+            ->with('default')
             ->once()
             ->andReturn($subscription);
 
@@ -320,7 +330,7 @@ class GoogleCloudPubSubAdapterTest extends TestCase
             ->once()
             ->andReturn($topic);
 
-        $adapter = new GoogleCloudPubSubAdapter($client, true, false);
+        $adapter = new GoogleCloudPubSubAdapter($client, null, true, false);
 
         $handler1 = Mockery::mock(\stdClass::class);
         $handler1->shouldReceive('handle')

@@ -27,6 +27,13 @@ $client = new \Google\Cloud\PubSub\PubSubClient([
 $adapter = new \Superbalist\PubSub\GoogleCloud\GoogleCloudPubSubAdapter($client);
 
 
+// disable auto topic & subscription creation
+$adapter->setAutoCreateTopics(false); // this is true by default
+$adapter->setAutoCreateSubscriptions(false); // this is true by default
+
+// set a unique client identifier for the subscriber
+$adapter->setClientIdentifier('search_service');
+
 // consume messages
 // note: this is a blocking call
 $adapter->subscribe('my_channel', function ($message) {
@@ -38,10 +45,6 @@ $adapter->publish('my_channel', 'HELLO WORLD');
 $adapter->publish('my_channel', json_encode(['hello' => 'world']));
 $adapter->publish('my_channel', 1);
 $adapter->publish('my_channel', false);
-
-// disable auto topic & subscription creation
-$adapter->setAutoCreateTopics(false); // this is true by default
-$adapter->setAutoCreateSubscriptions(false); // this is true by default
 ```
 
 ## Examples
