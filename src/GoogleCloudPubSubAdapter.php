@@ -190,6 +190,7 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
     {
         $topic = $this->getTopicForChannel($channel);
         $clientIdentifier = $this->clientIdentifier ? $this->clientIdentifier : 'default';
+        $clientIdentifier .= '.' . $topic;
         $subscription = $topic->subscription($clientIdentifier);
         if ($this->autoCreateSubscriptions && !$subscription->exists()) {
             $subscription->create();

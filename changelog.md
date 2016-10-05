@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.1 - 2016-10-05
+
+* Fix to subscriber bug - client identifier needs to be unique across topics.
+
 ## 2.0.0 - 2016-10-05
 
 * Add new `$clientIdentifier` & `setClientIdentifier()` functionality to allow subscribers to use the same, or unique identifiers.
