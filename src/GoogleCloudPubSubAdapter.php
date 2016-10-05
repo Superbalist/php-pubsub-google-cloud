@@ -14,6 +14,11 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
     protected $client;
 
     /**
+     * @var string
+     */
+    protected $clientIdentifier;
+
+    /**
      * @var bool
      */
     protected $autoCreateTopics;
@@ -25,12 +30,14 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
 
     /**
      * @param PubSubClient $client
+     * @param string $clientIdentifier
      * @param bool $autoCreateTopics
      * @param bool $autoCreateSubscriptions
      */
-    public function __construct(PubSubClient $client, $autoCreateTopics = true, $autoCreateSubscriptions = true)
+    public function __construct(PubSubClient $client, $clientIdentifier = null, $autoCreateTopics = true, $autoCreateSubscriptions = true)
     {
         $this->client = $client;
+        $this->clientIdentifier = $clientIdentifier;
         $this->autoCreateTopics = $autoCreateTopics;
         $this->autoCreateSubscriptions = $autoCreateSubscriptions;
     }
@@ -43,6 +50,32 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
     public function getClient()
     {
         return $this->client;
+    }
+
+    /**
+     * Set the unique client identifier.
+     *
+     * The client identifier is used when creating a subscription to a topic.
+     *
+     * A topic can have multiple subscribers connected.
+     * If all subscribers use the same client identifier, the messages will load-balance across them.
+     * If all subscribers have different client identifiers, the messages will be dispatched all of them.
+     *
+     * @param string $clientIdentifier
+     */
+    public function setClientIdentifier($clientIdentifier)
+    {
+        $this->clientIdentifier = $clientIdentifier;
+    }
+
+    /**
+     * Return the unique client identifier.
+     *
+     * @return string
+     */
+    public function getClientIdentifier()
+    {
+        return $this->clientIdentifier;
     }
 
     /**
@@ -156,7 +189,8 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
     protected function getSubscriptionForChannel($channel)
     {
         $topic = $this->getTopicForChannel($channel);
-        $subscription = $topic->subscription($channel);
+        $clientIdentifier = $this->clientIdentifier ? $this->clientIdentifier : 'default';
+        $subscription = $topic->subscription($clientIdentifier);
         if ($this->autoCreateSubscriptions && !$subscription->exists()) {
             $subscription->create();
         }
