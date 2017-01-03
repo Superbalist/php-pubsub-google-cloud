@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.0.2 - 2017-01-03
+
+* Allow for google/cloud ^0.10.0
+
 ## 2.0.1 - 2016-10-05
 
 * Fix to subscriber bug - client identifier needs to be unique across topics.
