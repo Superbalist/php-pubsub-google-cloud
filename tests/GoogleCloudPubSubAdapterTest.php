@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use Google\Cloud\PubSub\Message;
 use Google\Cloud\PubSub\PubSubClient;
 use Google\Cloud\PubSub\Subscription;
 use Google\Cloud\PubSub\Topic;
@@ -121,27 +122,16 @@ class GoogleCloudPubSubAdapterTest extends TestCase
 
     public function testSubscribeWhenSubscriptionMustBeCreated()
     {
+        $message1 = new Message(['data' => 'a:1:{s:5:"hello";s:5:"world";}'], ['ackId' => 1]);
+        $message2 = new Message(['data' => 'this is a string'], ['ackId' => 2]);
+        $message3 = new Message(['data' => 'unsubscribe'], ['ackId' => 3]);
+
         $messageBatch1 = [
-            [
-                'ackId' => 1,
-                'message' => [
-                    'data' => base64_encode('a:1:{s:5:"hello";s:5:"world";}')
-                ],
-            ],
-            [
-                'ackId' => 2,
-                'message' => [
-                    'data' => base64_encode('this is a string')
-                ],
-            ],
+            $message1,
+            $message2,
         ];
         $messageBatch2 = [
-            [
-                'ackId' => 3,
-                'message' => [
-                    'data' => base64_encode('unsubscribe')
-                ],
-            ],
+            $message3,
         ];
 
         $subscription = Mockery::mock(Subscription::class);
@@ -154,16 +144,16 @@ class GoogleCloudPubSubAdapterTest extends TestCase
             ->once()
             ->andReturn($messageBatch1);
         $subscription->shouldReceive('acknowledge')
-            ->with(1)
+            ->with($message1)
             ->once();
         $subscription->shouldReceive('acknowledge')
-            ->with(2)
+            ->with($message2)
             ->once();
         $subscription->shouldReceive('pull')
             ->once()
             ->andReturn($messageBatch2);
         $subscription->shouldReceive('acknowledge')
-            ->with(3)
+            ->with($message3)
             ->once();
 
         $topic = Mockery::mock(Topic::class);
@@ -197,27 +187,16 @@ class GoogleCloudPubSubAdapterTest extends TestCase
 
     public function testSubscribeWhenSubscriptionExists()
     {
+        $message1 = new Message(['data' => 'a:1:{s:5:"hello";s:5:"world";}'], ['ackId' => 1]);
+        $message2 = new Message(['data' => 'this is a string'], ['ackId' => 2]);
+        $message3 = new Message(['data' => 'unsubscribe'], ['ackId' => 3]);
+
         $messageBatch1 = [
-            [
-                'ackId' => 1,
-                'message' => [
-                    'data' => base64_encode('a:1:{s:5:"hello";s:5:"world";}')
-                ],
-            ],
-            [
-                'ackId' => 2,
-                'message' => [
-                    'data' => base64_encode('this is a string')
-                ],
-            ],
+            $message1,
+            $message2,
         ];
         $messageBatch2 = [
-            [
-                'ackId' => 3,
-                'message' => [
-                    'data' => base64_encode('unsubscribe')
-                ],
-            ],
+            $message3,
         ];
 
         $subscription = Mockery::mock(Subscription::class);
@@ -229,16 +208,16 @@ class GoogleCloudPubSubAdapterTest extends TestCase
             ->once()
             ->andReturn($messageBatch1);
         $subscription->shouldReceive('acknowledge')
-            ->with(1)
+            ->with($message1)
             ->once();
         $subscription->shouldReceive('acknowledge')
-            ->with(2)
+            ->with($message2)
             ->once();
         $subscription->shouldReceive('pull')
             ->once()
             ->andReturn($messageBatch2);
         $subscription->shouldReceive('acknowledge')
-            ->with(3)
+            ->with($message3)
             ->once();
 
         $topic = Mockery::mock(Topic::class);
@@ -272,27 +251,16 @@ class GoogleCloudPubSubAdapterTest extends TestCase
 
     public function testSubscribeWhenAutoTopicCreationIsDisabled()
     {
+        $message1 = new Message(['data' => 'a:1:{s:5:"hello";s:5:"world";}'], ['ackId' => 1]);
+        $message2 = new Message(['data' => 'this is a string'], ['ackId' => 2]);
+        $message3 = new Message(['data' => 'unsubscribe'], ['ackId' => 3]);
+
         $messageBatch1 = [
-            [
-                'ackId' => 1,
-                'message' => [
-                    'data' => base64_encode('a:1:{s:5:"hello";s:5:"world";}')
-                ],
-            ],
-            [
-                'ackId' => 2,
-                'message' => [
-                    'data' => base64_encode('this is a string')
-                ],
-            ],
+            $message1,
+            $message2,
         ];
         $messageBatch2 = [
-            [
-                'ackId' => 3,
-                'message' => [
-                    'data' => base64_encode('unsubscribe')
-                ],
-            ],
+            $message3,
         ];
 
         $subscription = Mockery::mock(Subscription::class);
@@ -302,16 +270,16 @@ class GoogleCloudPubSubAdapterTest extends TestCase
             ->once()
             ->andReturn($messageBatch1);
         $subscription->shouldReceive('acknowledge')
-            ->with(1)
+            ->with($message1)
             ->once();
         $subscription->shouldReceive('acknowledge')
-            ->with(2)
+            ->with($message2)
             ->once();
         $subscription->shouldReceive('pull')
             ->once()
             ->andReturn($messageBatch2);
         $subscription->shouldReceive('acknowledge')
-            ->with(3)
+            ->with($message3)
             ->once();
 
         $topic = Mockery::mock(Topic::class);
