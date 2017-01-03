@@ -2,6 +2,7 @@
 
 namespace Superbalist\PubSub\GoogleCloud;
 
+use Google\Cloud\PubSub\Message;
 use Google\Cloud\PubSub\PubSubClient;
 use Superbalist\PubSub\PubSubAdapterInterface;
 use Superbalist\PubSub\Utils;
@@ -34,8 +35,12 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
      * @param bool $autoCreateTopics
      * @param bool $autoCreateSubscriptions
      */
-    public function __construct(PubSubClient $client, $clientIdentifier = null, $autoCreateTopics = true, $autoCreateSubscriptions = true)
-    {
+    public function __construct(
+        PubSubClient $client,
+        $clientIdentifier = null,
+        $autoCreateTopics = true,
+        $autoCreateSubscriptions = true
+    ) {
         $this->client = $client;
         $this->clientIdentifier = $clientIdentifier;
         $this->autoCreateTopics = $autoCreateTopics;
@@ -134,9 +139,9 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
             $messages = $subscription->pull();
 
             foreach ($messages as $message) {
-                // the cloud library base64 encodes messages
-                $payload = base64_decode($message['message']['data']);
-                $payload = Utils::unserializeMessagePayload($payload);
+                /** @var Message $message */
+
+                $payload = Utils::unserializeMessagePayload($message->data());
 
                 if ($payload === 'unsubscribe') {
                     $isSubscriptionLoopActive = false;
@@ -144,7 +149,7 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
                     call_user_func($handler, $payload);
                 }
 
-                $subscription->acknowledge($message['ackId']);
+                $subscription->acknowledge($message);
             }
         }
     }
