@@ -15,6 +15,24 @@ A Google Cloud adapter for the [php-pubsub](https://github.com/Superbalist/php-p
 composer require superbalist/php-pubsub-google-cloud
 ```
 
+## gRPC Support
+
+Google Cloud PHP v0.12.0 added support for communication over the gRPC protocol.
+
+> gRPC is great for high-performance, low-latency applications, and is highly recommended in cases where performance and latency are concerns.
+
+The library will automatically choose gRPC over REST if all dependencies are installed.
+* [gRPC PECL extension](https://pecl.php.net/package/gRPC)
+* [google/proto-client-php composer package](https://github.com/googleapis/gax-php)
+* [googleapis/proto-client-php composer package](https://github.com/googleapis/proto-client-php)
+
+```bash
+pecl install grpc
+
+composer require google/gax
+composer require google/proto-client-php ^0.6
+```
+
 ## Usage
 
 ```php

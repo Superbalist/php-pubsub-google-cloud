@@ -5,3 +5,4 @@ bin
 coverage
 coverage.xml
 gcloud-test-key.json
+your-gcloud-key.json

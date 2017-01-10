@@ -13,7 +13,9 @@ RUN apt-get update \
     && rm -r /var/lib/apt/lists/*
 
 # PHP Extensions
-RUN docker-php-ext-install -j$(nproc) zip
+RUN docker-php-ext-install -j$(nproc) zip \
+    && pecl install grpc \
+    && docker-php-ext-enable grpc
 
 # Composer
 ENV COMPOSER_HOME /composer
@@ -26,9 +28,12 @@ RUN curl -o /tmp/composer-setup.php https://getcomposer.org/installer \
 
 # Install Composer Application Dependencies
 COPY composer.json /opt/php-pubsub/
-RUN composer install --no-autoloader --no-scripts --no-interaction
+RUN composer install --no-autoloader --no-scripts --no-interaction \
+    && composer require google/proto-client-php ^0.6 \
+    && composer require google/gax
 
 COPY src /opt/php-pubsub/src
+COPY your-gcloud-key.json /opt/php-pubsub
 COPY examples /opt/php-pubsub/examples
 
 RUN composer dump-autoload --no-interaction
