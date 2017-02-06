@@ -140,7 +140,6 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
 
             foreach ($messages as $message) {
                 /** @var Message $message */
-
                 $payload = Utils::unserializeMessagePayload($message->data());
 
                 if ($payload === 'unsubscribe') {
@@ -172,6 +171,7 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
      * If the topic doesn't exist, the topic is first created.
      *
      * @param string $channel
+     *
      * @return \Google\Cloud\PubSub\Topic
      */
     protected function getTopicForChannel($channel)
@@ -189,6 +189,7 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
      * If the subscription doesn't exist, the subscription is first created.
      *
      * @param string $channel
+     *
      * @return \Google\Cloud\PubSub\Subscription
      */
     protected function getSubscriptionForChannel($channel)
