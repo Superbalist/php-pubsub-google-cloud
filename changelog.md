@@ -1,6 +1,6 @@
 # Changelog
 
-## 3.0.1 - ?
+## 3.0.1 - 2017-04-03
 
 * Fix to gRPC timeouts
 * Allow for google/cloud ^0.21.0|^0.22.0|^0.23.0|^0.24.0|^0.25.0
