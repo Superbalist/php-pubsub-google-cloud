@@ -140,9 +140,7 @@ class GoogleCloudPubSubAdapterTest extends TestCase
             ->andReturn(false);
         $subscription->shouldReceive('create')
             ->once();
-        $subscription->shouldReceive('pull')
-            ->once()
-            ->andReturn($messageBatch1);
+
         $subscription->shouldReceive('acknowledge')
             ->with($message1)
             ->once();
@@ -150,6 +148,11 @@ class GoogleCloudPubSubAdapterTest extends TestCase
             ->with($message2)
             ->once();
         $subscription->shouldReceive('pull')
+            ->with([
+                'grpcOptions' => [
+                    'timeoutMillis' => null,
+                ],
+            ])
             ->once()
             ->andReturn($messageBatch2);
         $subscription->shouldReceive('acknowledge')
@@ -205,6 +208,11 @@ class GoogleCloudPubSubAdapterTest extends TestCase
             ->andReturn(true);
         $subscription->shouldNotHaveReceived('create');
         $subscription->shouldReceive('pull')
+            ->with([
+                'grpcOptions' => [
+                    'timeoutMillis' => null,
+                ],
+            ])
             ->once()
             ->andReturn($messageBatch1);
         $subscription->shouldReceive('acknowledge')
@@ -214,6 +222,11 @@ class GoogleCloudPubSubAdapterTest extends TestCase
             ->with($message2)
             ->once();
         $subscription->shouldReceive('pull')
+            ->with([
+                'grpcOptions' => [
+                    'timeoutMillis' => null,
+                ],
+            ])
             ->once()
             ->andReturn($messageBatch2);
         $subscription->shouldReceive('acknowledge')
@@ -267,6 +280,11 @@ class GoogleCloudPubSubAdapterTest extends TestCase
         $subscription->shouldNotHaveReceived('exists');
         $subscription->shouldNotHaveReceived('create');
         $subscription->shouldReceive('pull')
+            ->with([
+                'grpcOptions' => [
+                    'timeoutMillis' => null,
+                ],
+            ])
             ->once()
             ->andReturn($messageBatch1);
         $subscription->shouldReceive('acknowledge')
@@ -276,6 +294,11 @@ class GoogleCloudPubSubAdapterTest extends TestCase
             ->with($message2)
             ->once();
         $subscription->shouldReceive('pull')
+            ->with([
+                'grpcOptions' => [
+                    'timeoutMillis' => null,
+                ],
+            ])
             ->once()
             ->andReturn($messageBatch2);
         $subscription->shouldReceive('acknowledge')

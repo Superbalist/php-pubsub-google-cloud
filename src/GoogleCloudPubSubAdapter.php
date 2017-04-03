@@ -136,7 +136,11 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
         $isSubscriptionLoopActive = true;
 
         while ($isSubscriptionLoopActive) {
-            $messages = $subscription->pull();
+            $messages = $subscription->pull([
+                'grpcOptions' => [
+                    'timeoutMillis' => null,
+                ],
+            ]);
 
             foreach ($messages as $message) {
                 /** @var Message $message */

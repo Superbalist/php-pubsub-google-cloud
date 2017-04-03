@@ -31,7 +31,7 @@ The library will automatically choose gRPC over REST if all dependencies are ins
 pecl install grpc
 
 composer require google/gax
-composer require google/proto-client-php ^0.6
+composer require google/proto-client-php ^0.10.0
 ```
 
 ## Usage

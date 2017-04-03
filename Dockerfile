@@ -29,7 +29,7 @@ RUN curl -o /tmp/composer-setup.php https://getcomposer.org/installer \
 # Install Composer Application Dependencies
 COPY composer.json /opt/php-pubsub/
 RUN composer install --no-autoloader --no-scripts --no-interaction \
-    && composer require google/proto-client-php ^0.6 \
+    && composer require google/proto-client-php ^0.10.0 \
     && composer require google/gax
 
 COPY src /opt/php-pubsub/src
