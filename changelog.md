@@ -1,5 +1,11 @@
 # Changelog
 
+## 4.0.0 - 2017-05-16
+
+* Allow for google/cloud ^0.26.0|^0.27.0|^0.27.0
+* Bump up to superbalist/php-pubsub ^2.0
+* Add new publishBatch method to GoogleCloudPubSubAdapter
+
 ## 3.0.1 - 2017-04-03
 
 * Fix to gRPC timeouts

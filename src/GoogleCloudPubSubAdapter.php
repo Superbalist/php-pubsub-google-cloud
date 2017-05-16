@@ -170,6 +170,21 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
     }
 
     /**
+     * Publish multiple messages to a channel.
+     *
+     * @param string $channel
+     * @param array $messages
+     */
+    public function publishBatch($channel, array $messages)
+    {
+        $topic = $this->getTopicForChannel($channel);
+        $messages = array_map(function ($message) {
+            return ['data' => Utils::serializeMessage($message)];
+        }, $messages);
+        $topic->publishBatch($messages);
+    }
+
+    /**
      * Return a `Topic` instance from a channel name.
      *
      * If the topic doesn't exist, the topic is first created.

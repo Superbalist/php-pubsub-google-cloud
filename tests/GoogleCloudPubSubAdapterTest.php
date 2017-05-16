@@ -59,7 +59,7 @@ class GoogleCloudPubSubAdapterTest extends TestCase
             ->once();
         $topic->shouldReceive('publish')
             ->with([
-                'data' => 'a:1:{s:5:"hello";s:5:"world";}',
+                'data' => '{"hello":"world"}',
             ])
             ->once();
 
@@ -83,7 +83,7 @@ class GoogleCloudPubSubAdapterTest extends TestCase
         $topic->shouldNotHaveReceived('create');
         $topic->shouldReceive('publish')
             ->with([
-                'data' => 'a:1:{s:5:"hello";s:5:"world";}',
+                'data' => '{"hello":"world"}',
             ])
             ->once();
 
@@ -105,7 +105,7 @@ class GoogleCloudPubSubAdapterTest extends TestCase
         $topic->shouldNotHaveReceived('create');
         $topic->shouldReceive('publish')
             ->with([
-                'data' => 'a:1:{s:5:"hello";s:5:"world";}',
+                'data' => '{"hello":"world"}',
             ])
             ->once();
 
@@ -120,11 +120,39 @@ class GoogleCloudPubSubAdapterTest extends TestCase
         $adapter->publish('channel_name', ['hello' => 'world']);
     }
 
+    public function testPublishBatch()
+    {
+        $topic = Mockery::mock(Topic::class);
+        $topic->shouldReceive('exists')
+            ->once()
+            ->andReturn(true);
+        $topic->shouldReceive('publishBatch')
+            ->with([
+                ['data' => '{"hello":"world"}'],
+                ['data' => '"booo!"'],
+            ])
+            ->once();
+
+        $client = Mockery::mock(PubSubClient::class);
+        $client->shouldReceive('topic')
+            ->with('channel_name')
+            ->once()
+            ->andReturn($topic);
+
+        $adapter = new GoogleCloudPubSubAdapter($client);
+
+        $messages = [
+            ['hello' => 'world'],
+            'booo!',
+        ];
+        $adapter->publishBatch('channel_name', $messages);
+    }
+
     public function testSubscribeWhenSubscriptionMustBeCreated()
     {
-        $message1 = new Message(['data' => 'a:1:{s:5:"hello";s:5:"world";}'], ['ackId' => 1]);
-        $message2 = new Message(['data' => 'this is a string'], ['ackId' => 2]);
-        $message3 = new Message(['data' => 'unsubscribe'], ['ackId' => 3]);
+        $message1 = new Message(['data' => '{"hello":"world"}'], ['ackId' => 1]);
+        $message2 = new Message(['data' => '"this is a string"'], ['ackId' => 2]);
+        $message3 = new Message(['data' => '"unsubscribe"'], ['ackId' => 3]);
 
         $messageBatch1 = [
             $message1,
@@ -198,9 +226,9 @@ class GoogleCloudPubSubAdapterTest extends TestCase
 
     public function testSubscribeWhenSubscriptionExists()
     {
-        $message1 = new Message(['data' => 'a:1:{s:5:"hello";s:5:"world";}'], ['ackId' => 1]);
-        $message2 = new Message(['data' => 'this is a string'], ['ackId' => 2]);
-        $message3 = new Message(['data' => 'unsubscribe'], ['ackId' => 3]);
+        $message1 = new Message(['data' => '{"hello":"world"}'], ['ackId' => 1]);
+        $message2 = new Message(['data' => '"this is a string"'], ['ackId' => 2]);
+        $message3 = new Message(['data' => '"unsubscribe"'], ['ackId' => 3]);
 
         $messageBatch1 = [
             $message1,
@@ -272,9 +300,9 @@ class GoogleCloudPubSubAdapterTest extends TestCase
 
     public function testSubscribeWhenAutoTopicCreationIsDisabled()
     {
-        $message1 = new Message(['data' => 'a:1:{s:5:"hello";s:5:"world";}'], ['ackId' => 1]);
-        $message2 = new Message(['data' => 'this is a string'], ['ackId' => 2]);
-        $message3 = new Message(['data' => 'unsubscribe'], ['ackId' => 3]);
+        $message1 = new Message(['data' => '{"hello":"world"}'], ['ackId' => 1]);
+        $message2 = new Message(['data' => '"this is a string"'], ['ackId' => 2]);
+        $message3 = new Message(['data' => '"unsubscribe"'], ['ackId' => 3]);
 
         $messageBatch1 = [
             $message1,
