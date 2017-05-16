@@ -143,7 +143,7 @@ class GoogleCloudPubSubAdapterTest extends TestCase
 
         $messages = [
             ['hello' => 'world'],
-            'booo!'
+            'booo!',
         ];
         $adapter->publishBatch('channel_name', $messages);
     }
