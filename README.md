@@ -82,6 +82,10 @@ The Batch Daemon needs to be manually run as a long-lived background process.
 For all other cases, messages will be queued in memory and will be published before the script terminates using a
 vendor registered shutdown handler.
 
+**Please Note**
+
+This is marked by google/cloud as an experimental feature & may change before release in backwards-incompatible ways.
+
 ## Examples
 
 The library comes with [examples](examples) for the adapter and a [Dockerfile](Dockerfile) for
