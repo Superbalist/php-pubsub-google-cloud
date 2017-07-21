@@ -1,8 +1,12 @@
 # Changelog
 
+## 4.0.1 - 2017-07-21
+
+* Allow for google/cloud ^0.29.0|^0.30.0|^0.31.0|^0.32.0|^0.33.0|^0.34.0|^0.35.0
+
 ## 4.0.0 - 2017-05-16
 
-* Allow for google/cloud ^0.26.0|^0.27.0|^0.27.0
+* Allow for google/cloud ^0.26.0|^0.27.0|^0.28.0
 * Bump up to superbalist/php-pubsub ^2.0
 * Add new publishBatch method to GoogleCloudPubSubAdapter
 
