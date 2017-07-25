@@ -30,21 +30,29 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
     protected $autoCreateSubscriptions;
 
     /**
+     * @var bool
+     */
+    protected $backgroundBatching;
+
+    /**
      * @param PubSubClient $client
      * @param string $clientIdentifier
      * @param bool $autoCreateTopics
      * @param bool $autoCreateSubscriptions
+     * @param bool $backgroundBatching
      */
     public function __construct(
         PubSubClient $client,
         $clientIdentifier = null,
         $autoCreateTopics = true,
-        $autoCreateSubscriptions = true
+        $autoCreateSubscriptions = true,
+        $backgroundBatching = false
     ) {
         $this->client = $client;
         $this->clientIdentifier = $clientIdentifier;
         $this->autoCreateTopics = $autoCreateTopics;
         $this->autoCreateSubscriptions = $autoCreateSubscriptions;
+        $this->backgroundBatching = $backgroundBatching;
     }
 
     /**
@@ -124,6 +132,35 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
     }
 
     /**
+     * Set whether or not background batching is enabled.
+     *
+     * This is available from Google Cloud 0.33+ - https://github.com/GoogleCloudPlatform/google-cloud-php/releases/tag/v0.33.0
+     *
+     * If the http://php.net/manual/en/book.sem.php and http://php.net/manual/en/book.pcntl.php extensions are enabled
+     * AND the IS_BATCH_DAEMON_RUNNING ENV var is set to true, the library will queue messages to be published by the
+     * Batch Daemon (https://github.com/GoogleCloudPlatform/google-cloud-php/blob/master/src/Core/Batch/BatchDaemon.php)
+     *
+     * For all other cases, messages will be queued in memory and will be published before the script terminates using
+     * a vendor registered shutdown handler.
+     *
+     * @param bool $backgroundBatching
+     */
+    public function setBackgroundBatching($backgroundBatching)
+    {
+        $this->backgroundBatching = $backgroundBatching;
+    }
+
+    /**
+     * Check whether or not background batching is enabled.
+     *
+     * @return bool
+     */
+    public function isBackgroundBatchingEnabled()
+    {
+        return $this->backgroundBatching;
+    }
+
+    /**
      * Subscribe a handler to a channel.
      *
      * @param string $channel
@@ -166,7 +203,13 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
     public function publish($channel, $message)
     {
         $topic = $this->getTopicForChannel($channel);
-        $topic->publish(['data' => Utils::serializeMessage($message)]);
+        $payload = Utils::serializeMessage($message);
+
+        if ($this->backgroundBatching) {
+            $topic->batchPublisher()->publish(['data' => $payload]);
+        } else {
+            $topic->publish(['data' => $payload]);
+        }
     }
 
     /**
@@ -181,7 +224,15 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
         $messages = array_map(function ($message) {
             return ['data' => Utils::serializeMessage($message)];
         }, $messages);
-        $topic->publishBatch($messages);
+
+        if ($this->backgroundBatching) {
+            $batchPublisher = $topic->batchPublisher();
+            foreach ($messages as $message) {
+                $batchPublisher->publish($message);
+            }
+        } else {
+            $topic->publishBatch($messages);
+        }
     }
 
     /**

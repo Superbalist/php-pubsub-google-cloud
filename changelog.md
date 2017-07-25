@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.0.0 - 2017-07-25
+
+* Add support for using Google Cloud batch requests (aka background daemon)
+
 ## 4.0.1 - 2017-07-21
 
 * Allow for google/cloud ^0.29.0|^0.30.0|^0.31.0|^0.32.0|^0.33.0|^0.34.0|^0.35.0
