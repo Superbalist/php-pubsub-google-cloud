@@ -1,6 +1,6 @@
 # Changelog
 
-## 5.0.1 - 2018-04-16
+## 5.0.1 - 2018-07-27
 
 * Allow setting of maximum number of messages to pull option
 
