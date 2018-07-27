@@ -319,6 +319,7 @@ class GoogleCloudPubSubAdapterTest extends TestCase
                 'grpcOptions' => [
                     'timeoutMillis' => null,
                 ],
+                'maxMessages' => 1000,
             ])
             ->once()
             ->andReturn($messageBatch1);
@@ -334,6 +335,7 @@ class GoogleCloudPubSubAdapterTest extends TestCase
                 'grpcOptions' => [
                     'timeoutMillis' => null,
                 ],
+                'maxMessages' => 1000,
             ])
             ->once()
             ->andReturn($messageBatch2);
@@ -394,6 +396,7 @@ class GoogleCloudPubSubAdapterTest extends TestCase
                 'grpcOptions' => [
                     'timeoutMillis' => null,
                 ],
+                'maxMessages' => 1000,
             ])
             ->once()
             ->andReturn($messageBatch1);
@@ -408,6 +411,7 @@ class GoogleCloudPubSubAdapterTest extends TestCase
                 'grpcOptions' => [
                     'timeoutMillis' => null,
                 ],
+                'maxMessages' => 1000,
             ])
             ->once()
             ->andReturn($messageBatch2);
@@ -466,6 +470,7 @@ class GoogleCloudPubSubAdapterTest extends TestCase
                 'grpcOptions' => [
                     'timeoutMillis' => null,
                 ],
+                'maxMessages' => 1000,
             ])
             ->once()
             ->andReturn($messageBatch1);
@@ -480,6 +485,7 @@ class GoogleCloudPubSubAdapterTest extends TestCase
                 'grpcOptions' => [
                     'timeoutMillis' => null,
                 ],
+                'maxMessages' => 1000,
             ])
             ->once()
             ->andReturn($messageBatch2);

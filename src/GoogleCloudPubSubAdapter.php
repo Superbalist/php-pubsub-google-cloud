@@ -4,6 +4,7 @@ namespace Superbalist\PubSub\GoogleCloud;
 
 use Google\Cloud\PubSub\Message;
 use Google\Cloud\PubSub\PubSubClient;
+use Google\Cloud\PubSub\Subscription;
 use Superbalist\PubSub\PubSubAdapterInterface;
 use Superbalist\PubSub\Utils;
 
@@ -35,24 +36,32 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
     protected $backgroundBatching;
 
     /**
+     * @var int
+     */
+    protected $maxMessages;
+
+    /**
      * @param PubSubClient $client
      * @param string $clientIdentifier
      * @param bool $autoCreateTopics
      * @param bool $autoCreateSubscriptions
      * @param bool $backgroundBatching
+     * @param int $maxMessages
      */
     public function __construct(
         PubSubClient $client,
         $clientIdentifier = null,
         $autoCreateTopics = true,
         $autoCreateSubscriptions = true,
-        $backgroundBatching = false
+        $backgroundBatching = false,
+        $maxMessages = 1000
     ) {
         $this->client = $client;
         $this->clientIdentifier = $clientIdentifier;
         $this->autoCreateTopics = $autoCreateTopics;
         $this->autoCreateSubscriptions = $autoCreateSubscriptions;
         $this->backgroundBatching = $backgroundBatching;
+        $this->maxMessages = $maxMessages;
     }
 
     /**
@@ -161,6 +170,17 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
     }
 
     /**
+     * Max messages to pull at a time.
+     * https://googlecloudplatform.github.io/google-cloud-php/#/docs/google-cloud/v0.35.0/pubsub/subscription?method=pull
+     *
+     * @param int $maxMessages
+     */
+    public function setMaxMessages($maxMessages)
+    {
+        $this->maxMessages = $maxMessages;
+    }
+
+    /**
      * Subscribe a handler to a channel.
      *
      * @param string $channel
@@ -177,6 +197,7 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
                 'grpcOptions' => [
                     'timeoutMillis' => null,
                 ],
+                'maxMessages' => $this->maxMessages,
             ]);
 
             foreach ($messages as $message) {

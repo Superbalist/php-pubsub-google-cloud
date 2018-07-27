@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.0.1 - 2018-07-27
+
+* Allow setting of maximum number of messages to pull option
+
 ## 5.0.0 - 2017-07-25
 
 * Add support for using Google Cloud batch requests (aka background daemon)
