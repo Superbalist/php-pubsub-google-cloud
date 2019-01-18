@@ -41,12 +41,18 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
     protected $maxMessages;
 
     /**
+     * @var bool
+     */
+    protected $checkResponse;
+
+    /**
      * @param PubSubClient $client
      * @param string $clientIdentifier
      * @param bool $autoCreateTopics
      * @param bool $autoCreateSubscriptions
      * @param bool $backgroundBatching
      * @param int $maxMessages
+     * @param bool $checkResponse
      */
     public function __construct(
         PubSubClient $client,
@@ -54,7 +60,8 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
         $autoCreateTopics = true,
         $autoCreateSubscriptions = true,
         $backgroundBatching = false,
-        $maxMessages = 1000
+        $maxMessages = 1000,
+        $checkResponse = false
     ) {
         $this->client = $client;
         $this->clientIdentifier = $clientIdentifier;
@@ -62,6 +69,7 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
         $this->autoCreateSubscriptions = $autoCreateSubscriptions;
         $this->backgroundBatching = $backgroundBatching;
         $this->maxMessages = $maxMessages;
+        $this->checkResponse = $checkResponse;
     }
 
     /**
@@ -185,11 +193,11 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
      *
      * @param string $channel
      * @param callable $handler
-     * @param bool $checkResponse 
      */
-    public function subscribe($channel, callable $handler, $checkResponse = false)
+    public function subscribe($channel, callable $handler)
     {
         $subscription = $this->getSubscriptionForChannel($channel);
+        /** @var Subscription $subscription */
 
         $isSubscriptionLoopActive = true;
 
@@ -211,7 +219,7 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
                     $response = call_user_func($handler, $payload);
                 }
                 
-                if (!$checkResponse || isset($response) && $response) {
+                if (!$this->checkResponse || isset($response) && $response) {
                     $subscription->acknowledge($message);
                 } else {
                     $subscription->modifyAckDeadline($message, 0); // nack, nack, nack
