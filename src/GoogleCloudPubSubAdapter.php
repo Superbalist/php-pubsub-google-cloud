@@ -52,7 +52,7 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
      * @param bool $autoCreateSubscriptions
      * @param bool $backgroundBatching
      * @param int $maxMessages
-     * @param bool $checkResponse
+     * @param bool $alwaysAck
      */
     public function __construct(
         PubSubClient $client,
