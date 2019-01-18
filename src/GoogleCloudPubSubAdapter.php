@@ -185,8 +185,9 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
      *
      * @param string $channel
      * @param callable $handler
+     * @param bool $checkResponse 
      */
-    public function subscribe($channel, callable $handler)
+    public function subscribe($channel, callable $handler, $checkResponse = false)
     {
         $subscription = $this->getSubscriptionForChannel($channel);
 
@@ -207,10 +208,12 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
                 if ($payload === 'unsubscribe') {
                     $isSubscriptionLoopActive = false;
                 } else {
-                    call_user_func($handler, $payload);
+                    $response = call_user_func($handler, $payload);
                 }
-
-                $subscription->acknowledge($message);
+                
+                if (!$checkResponse || isset($response) && $response) {
+                    $subscription->acknowledge($message);
+                }
             }
         }
     }
