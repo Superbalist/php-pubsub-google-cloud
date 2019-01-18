@@ -213,6 +213,8 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
                 
                 if (!$checkResponse || isset($response) && $response) {
                     $subscription->acknowledge($message);
+                } else {
+                    $subscription->modifyAckDeadline($message, 0); // nack, nack, nack
                 }
             }
         }
