@@ -5,6 +5,7 @@ namespace Superbalist\PubSub\GoogleCloud;
 use Google\Cloud\PubSub\Message;
 use Google\Cloud\PubSub\PubSubClient;
 use Google\Cloud\PubSub\Subscription;
+use Psr\Log\LoggerInterface;
 use Superbalist\PubSub\PubSubAdapterInterface;
 use Superbalist\PubSub\Utils;
 
@@ -14,6 +15,11 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
      * @var PubSubClient
      */
     protected $client;
+
+    /**
+     * @var LoggerInterface
+     */
+    protected $logger;
 
     /**
      * @var string
@@ -47,6 +53,7 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
 
     /**
      * @param PubSubClient $client
+     * @param LoggerInterface $logger
      * @param string $clientIdentifier
      * @param bool $autoCreateTopics
      * @param bool $autoCreateSubscriptions
@@ -56,6 +63,7 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
      */
     public function __construct(
         PubSubClient $client,
+        LoggerInterface $logger = null,
         $clientIdentifier = null,
         $autoCreateTopics = true,
         $autoCreateSubscriptions = true,
@@ -64,6 +72,7 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
         $alwaysAck = true
     ) {
         $this->client = $client;
+        $this->logger = $logger;
         $this->clientIdentifier = $clientIdentifier;
         $this->autoCreateTopics = $autoCreateTopics;
         $this->autoCreateSubscriptions = $autoCreateSubscriptions;
@@ -215,15 +224,23 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
 
                 if ($payload === 'unsubscribe') {
                     $isSubscriptionLoopActive = false;
-                } else {
-                    $response = call_user_func($handler, $payload);
+                    break;
                 }
-                
+
+                try {
+                    $response = call_user_func($handler, $payload);
+                } catch (\Exception $e) {
+                    if ($this->logger) {
+                        $this->logger->error("PubSub Message handler error: {$e->getMessage()}", $e);
+                    }
+                }
+
                 if ($this->alwaysAck || isset($response) && $response) {
                     $subscription->acknowledge($message);
-                } else {
-                    $subscription->modifyAckDeadline($message, 0); // nack, nack, nack
+                    break;
                 }
+
+                $subscription->modifyAckDeadline($message, 0); // nack
             }
         }
     }
