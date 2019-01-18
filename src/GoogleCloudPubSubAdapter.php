@@ -231,7 +231,7 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
                     $response = call_user_func($handler, $payload);
                 } catch (\Exception $e) {
                     if ($this->logger) {
-                        $this->logger->error("PubSub Message handler error: {$e->getMessage()}", $e);
+                        $this->logger->error("PubSub message handler error: {$e->getMessage()}", $e);
                     }
                 }
 
