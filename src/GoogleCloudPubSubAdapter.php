@@ -43,7 +43,7 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
     /**
      * @var bool
      */
-    protected $checkResponse;
+    protected $alwaysAck;
 
     /**
      * @param PubSubClient $client
@@ -61,7 +61,7 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
         $autoCreateSubscriptions = true,
         $backgroundBatching = false,
         $maxMessages = 1000,
-        $checkResponse = false
+        $alwaysAck = true
     ) {
         $this->client = $client;
         $this->clientIdentifier = $clientIdentifier;
@@ -69,7 +69,7 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
         $this->autoCreateSubscriptions = $autoCreateSubscriptions;
         $this->backgroundBatching = $backgroundBatching;
         $this->maxMessages = $maxMessages;
-        $this->checkResponse = $checkResponse;
+        $this->alwaysAck = $alwaysAck;
     }
 
     /**
@@ -219,7 +219,7 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
                     $response = call_user_func($handler, $payload);
                 }
                 
-                if (!$this->checkResponse || isset($response) && $response) {
+                if ($this->alwaysAck || isset($response) && $response) {
                     $subscription->acknowledge($message);
                 } else {
                     $subscription->modifyAckDeadline($message, 0); // nack, nack, nack
