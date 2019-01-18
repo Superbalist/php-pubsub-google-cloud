@@ -59,7 +59,7 @@ class GoogleCloudPubSubAdapterTest extends TestCase
         $adapter->setBackgroundBatching(true);
         $this->assertTrue($adapter->isBackgroundBatchingEnabled());
 
-        $adapter = new GoogleCloudPubSubAdapter($client, null, true, true, true);
+        $adapter = new GoogleCloudPubSubAdapter($client, null, null, true, true, true);
         $this->assertTrue($adapter->isBackgroundBatchingEnabled());
     }
 
@@ -193,7 +193,7 @@ class GoogleCloudPubSubAdapterTest extends TestCase
             ->once()
             ->andReturn($topic);
 
-        $adapter = new GoogleCloudPubSubAdapter($client, null, false);
+        $adapter = new GoogleCloudPubSubAdapter($client, null, null, false);
 
         $adapter->publish('channel_name', ['hello' => 'world']);
     }
@@ -221,7 +221,7 @@ class GoogleCloudPubSubAdapterTest extends TestCase
             ->once()
             ->andReturn($topic);
 
-        $adapter = new GoogleCloudPubSubAdapter($client, null, false);
+        $adapter = new GoogleCloudPubSubAdapter($client, null, null, false);
         $adapter->setBackgroundBatching(true);
 
         $adapter->publish('channel_name', ['hello' => 'world']);
@@ -509,7 +509,7 @@ class GoogleCloudPubSubAdapterTest extends TestCase
             ->once()
             ->andReturn($topic);
 
-        $adapter = new GoogleCloudPubSubAdapter($client, null, true, false);
+        $adapter = new GoogleCloudPubSubAdapter($client, null, null, true, false);
 
         $handler1 = Mockery::mock(\stdClass::class);
         $handler1->shouldReceive('handle')
