@@ -4,7 +4,6 @@ A Google Cloud adapter for the [php-pubsub](https://github.com/Superbalist/php-p
 
 [![Author](http://img.shields.io/badge/author-@superbalist-blue.svg?style=flat-square)](https://twitter.com/superbalist)
 [![Build Status](https://img.shields.io/travis/Superbalist/php-pubsub-google-cloud/master.svg?style=flat-square)](https://travis-ci.org/Superbalist/php-pubsub-google-cloud)
-[![StyleCI](https://styleci.io/repos/67334430/shield?branch=master)](https://styleci.io/repos/67334430)
 [![Software License](https://img.shields.io/badge/license-MIT-brightgreen.svg?style=flat-square)](LICENSE)
 [![Packagist Version](https://img.shields.io/packagist/v/superbalist/php-pubsub-google-cloud.svg?style=flat-square)](https://packagist.org/packages/superbalist/php-pubsub-google-cloud)
 [![Total Downloads](https://img.shields.io/packagist/dt/superbalist/php-pubsub-google-cloud.svg?style=flat-square)](https://packagist.org/packages/superbalist/php-pubsub-google-cloud)
