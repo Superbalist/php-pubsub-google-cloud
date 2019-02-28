@@ -1,6 +1,6 @@
 # Changelog
 
-## 5.0.2 - 2019-02-28
+## 5.1.0 - 2019-02-28
 
 * Bump up google/cloud requirement to ^0.95.0
 
