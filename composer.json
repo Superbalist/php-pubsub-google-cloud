@@ -11,8 +11,6 @@
   "require": {
     "php": ">=5.6.0",
     "superbalist/php-pubsub": "^2.0",
-    "grpc/grpc": "^1.19.0",
-    "google/gax": "^0.38",
     "google/cloud": "0.95.0"
   },
   "autoload": {
