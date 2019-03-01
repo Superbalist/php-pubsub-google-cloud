@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.1.0 - 2019-02-28
+
+* Bump up google/cloud requirement to ^0.95.0
+
 ## 5.0.1 - 2018-07-27
 
 * Allow setting of maximum number of messages to pull option

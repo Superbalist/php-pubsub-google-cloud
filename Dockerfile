@@ -17,6 +17,9 @@ RUN docker-php-ext-install -j$(nproc) zip \
     && pecl install grpc \
     && docker-php-ext-enable grpc
 
+RUN pecl install protobuf \
+    && docker-php-ext-enable protobuf
+
 # Composer
 ENV COMPOSER_HOME /composer
 ENV PATH /composer/vendor/bin:$PATH
@@ -28,13 +31,14 @@ RUN curl -o /tmp/composer-setup.php https://getcomposer.org/installer \
 
 # Install Composer Application Dependencies
 COPY composer.json /opt/php-pubsub/
-RUN composer install --no-autoloader --no-scripts --no-interaction \
-    && composer require google/proto-client-php ^0.10.0 \
-    && composer require google/gax
+RUN composer install --no-autoloader --no-scripts --no-interaction
 
 COPY src /opt/php-pubsub/src
 COPY your-gcloud-key.json /opt/php-pubsub
 COPY examples /opt/php-pubsub/examples
+COPY phpunit.php /opt/php-pubsub
+COPY phpunit.xml /opt/php-pubsub
+COPY tests /opt/php-pubsub/tests
 
 RUN composer dump-autoload --no-interaction
 
