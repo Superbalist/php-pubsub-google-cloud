@@ -198,8 +198,12 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
                     'timeoutMillis' => null,
                 ],
                 'maxMessages' => $this->maxMessages,
+                'returnImmediately' => true,
             ]);
-
+            if ( ! $messages || count($messages) < 1) {
+                usleep(200000);
+                continue;
+            }
             foreach ($messages as $message) {
                 /** @var Message $message */
                 $payload = Utils::unserializeMessagePayload($message->data());
