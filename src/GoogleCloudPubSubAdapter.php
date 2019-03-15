@@ -41,6 +41,16 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
     protected $maxMessages;
 
     /**
+     * @var bool
+     */
+    protected $returnImmediately;
+
+    /**
+     * @var int
+     */
+    protected $returnImmediatelyPause;
+
+    /**
      * @param PubSubClient $client
      * @param string $clientIdentifier
      * @param bool $autoCreateTopics
@@ -54,7 +64,9 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
         $autoCreateTopics = true,
         $autoCreateSubscriptions = true,
         $backgroundBatching = false,
-        $maxMessages = 1000
+        $maxMessages = 1000,
+        $returnImmediately = false,
+        $returnImmediatelyPause = 500000
     ) {
         $this->client = $client;
         $this->clientIdentifier = $clientIdentifier;
@@ -62,6 +74,8 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
         $this->autoCreateSubscriptions = $autoCreateSubscriptions;
         $this->backgroundBatching = $backgroundBatching;
         $this->maxMessages = $maxMessages;
+        $this->returnImmediately = $returnImmediately;
+        $this->returnImmediatelyPause = $returnImmediatelyPause;
     }
 
     /**
@@ -141,6 +155,40 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
     }
 
     /**
+     * Set if a pull should return immediately if there are no messages
+     * @param bool $returnImmediately
+     */
+    public function setReturnImmediately($returnImmediately) {
+        $this->returnImmediately = $returnImmediately;
+    }
+
+    /**
+     * Return the return immediately configuration
+     * @return bool
+     */
+    public function getReturnImmediately() {
+        return $this->returnImmediately;
+    }
+
+    /**
+     * Set the amount of time to pause between attempts to pull messages if return immediately is enabled.
+     * Value is in microseconds
+     *
+     * @param $returnImmediatelyPause
+     */
+    public function setReturnImmediatelyPause($returnImmediatelyPause) {
+        $this->returnImmediatelyPause = $returnImmediatelyPause;
+    }
+
+    /**
+     * Return the return immediately pause configuration
+     * @return int
+     */
+    public function getReturnImmediatelyPause() {
+        return $this->returnImmediatelyPause;
+    }
+
+    /**
      * Set whether or not background batching is enabled.
      *
      * This is available from Google Cloud 0.33+ - https://github.com/GoogleCloudPlatform/google-cloud-php/releases/tag/v0.33.0
@@ -198,10 +246,10 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
                     'timeoutMillis' => null,
                 ],
                 'maxMessages' => $this->maxMessages,
-                'returnImmediately' => true,
+                'returnImmediately' => $this->returnImmediately,
             ]);
-            if ( ! $messages || count($messages) < 1) {
-                usleep(200000);
+            if ($this->returnImmediately && empty($messages)) {
+                usleep($this->returnImmediatelyPause);
                 continue;
             }
             foreach ($messages as $message) {
