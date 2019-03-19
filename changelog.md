@@ -1,5 +1,9 @@
 # Changelog
 
+## 5.2.0 - 2019-03-19
+
+* Add ability to use returnImmediately flag when pulling messages 
+
 ## 5.1.0 - 2019-02-28
 
 * Bump up google/cloud requirement to ^0.95.0
