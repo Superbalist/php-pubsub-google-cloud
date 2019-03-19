@@ -75,7 +75,7 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
         $this->backgroundBatching = $backgroundBatching;
         $this->maxMessages = $maxMessages;
         $this->returnImmediately = $returnImmediately;
-        $this->returnImmediatelyPause = $returnImmediatelyPause;
+        $this->returnImmediatelyPause = (int) $returnImmediatelyPause;
     }
 
     /**
