@@ -63,6 +63,26 @@ class GoogleCloudPubSubAdapterTest extends TestCase
         $this->assertTrue($adapter->isBackgroundBatchingEnabled());
     }
 
+    public function testGetSetReturnImmediately()
+    {
+        $client = Mockery::mock(PubSubClient::class);
+        $adapter = new GoogleCloudPubSubAdapter($client);
+        $this->assertFalse($adapter->getReturnImmediately());
+
+        $adapter->setReturnImmediately(true);
+        $this->assertTrue($adapter->getReturnImmediately());
+    }
+
+    public function testGetSetReturnImmediatelyPause()
+    {
+        $client = Mockery::mock(PubSubClient::class);
+        $adapter = new GoogleCloudPubSubAdapter($client);
+        $this->assertEquals(500000, $adapter->getReturnImmediatelyPause());
+
+        $adapter->setReturnImmediatelyPause(1000000);
+        $this->assertEquals(1000000, $adapter->getReturnImmediatelyPause());
+    }
+
     public function testPublishWhenTopicMustBeCreated()
     {
         $topic = Mockery::mock(Topic::class);
@@ -320,6 +340,7 @@ class GoogleCloudPubSubAdapterTest extends TestCase
                     'timeoutMillis' => null,
                 ],
                 'maxMessages' => 1000,
+                'returnImmediately' => false
             ])
             ->once()
             ->andReturn($messageBatch1);
@@ -336,6 +357,7 @@ class GoogleCloudPubSubAdapterTest extends TestCase
                     'timeoutMillis' => null,
                 ],
                 'maxMessages' => 1000,
+                'returnImmediately' => false
             ])
             ->once()
             ->andReturn($messageBatch2);
@@ -397,6 +419,7 @@ class GoogleCloudPubSubAdapterTest extends TestCase
                     'timeoutMillis' => null,
                 ],
                 'maxMessages' => 1000,
+                'returnImmediately' => false
             ])
             ->once()
             ->andReturn($messageBatch1);
@@ -412,6 +435,7 @@ class GoogleCloudPubSubAdapterTest extends TestCase
                     'timeoutMillis' => null,
                 ],
                 'maxMessages' => 1000,
+                'returnImmediately' => false
             ])
             ->once()
             ->andReturn($messageBatch2);
@@ -471,6 +495,7 @@ class GoogleCloudPubSubAdapterTest extends TestCase
                     'timeoutMillis' => null,
                 ],
                 'maxMessages' => 1000,
+                'returnImmediately' => false
             ])
             ->once()
             ->andReturn($messageBatch1);
@@ -486,6 +511,7 @@ class GoogleCloudPubSubAdapterTest extends TestCase
                     'timeoutMillis' => null,
                 ],
                 'maxMessages' => 1000,
+                'returnImmediately' => false
             ])
             ->once()
             ->andReturn($messageBatch2);
@@ -519,6 +545,83 @@ class GoogleCloudPubSubAdapterTest extends TestCase
             ->with('this is a string')
             ->once();
 
+        $adapter->subscribe('channel_name', [$handler1, 'handle']);
+    }
+
+    public function testSubscribeWhenReturnImmediatelyIsEnabled()
+    {
+        $message1 = new Message(['data' => '{"hello":"world"}'], ['ackId' => 1]);
+        $message2 = new Message(['data' => '"this is a string"'], ['ackId' => 2]);
+        $message3 = new Message(['data' => '"unsubscribe"'], ['ackId' => 3]);
+
+        $messageBatch1 = [
+            $message1,
+            $message2,
+        ];
+
+        $messageBatch2 = [
+            $message3,
+        ];
+
+        $subscription = Mockery::mock(Subscription::class);
+        $subscription->shouldReceive('exists')
+            ->once()
+            ->andReturn(true);
+        $subscription->shouldNotHaveReceived('create');
+
+        $expectedPullOptions = [
+            'grpcOptions' => [
+                'timeoutMillis' => null,
+            ],
+            'maxMessages' => 1000,
+            'returnImmediately' => true
+        ];
+
+        $subscription->shouldReceive('pull')
+            ->with($expectedPullOptions)
+            ->once()
+            ->andReturn($messageBatch1);
+        $subscription->shouldReceive('acknowledge')
+            ->with($message1)
+            ->once();
+        $subscription->shouldReceive('acknowledge')
+            ->with($message2)
+            ->once();
+
+        $subscription->shouldReceive('pull')
+            ->with($expectedPullOptions)
+            ->once()
+            ->andReturn($messageBatch2);
+        $subscription->shouldReceive('acknowledge')
+            ->with($message3)
+            ->once();
+
+        $topic = Mockery::mock(Topic::class);
+        $topic->shouldReceive('exists')
+            ->once()
+            ->andReturn(true);
+        $topic->shouldNotHaveReceived('create');
+        $topic->shouldReceive('subscription')
+            ->with('default.channel_name')
+            ->once()
+            ->andReturn($subscription);
+
+        $client = Mockery::mock(PubSubClient::class);
+        $client->shouldReceive('topic')
+            ->with('channel_name')
+            ->once()
+            ->andReturn($topic);
+
+        $handler1 = Mockery::mock(\stdClass::class);
+        $handler1->shouldReceive('handle')
+            ->with(['hello' => 'world'])
+            ->once();
+        $handler1->shouldReceive('handle')
+            ->with('this is a string')
+            ->once();
+
+        $adapter = new GoogleCloudPubSubAdapter($client);
+        $adapter->setReturnImmediately(true);
         $adapter->subscribe('channel_name', [$handler1, 'handle']);
     }
 }
