@@ -1,6 +1,6 @@
 # Changelog
 
-## 5.1.1 - 2019-03-19
+## 5.2.0 - 2019-03-19
 
 * Add ability to use returnImmediately flag when pulling messages 
 
