@@ -174,10 +174,10 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
      * Set the amount of time to pause between attempts to pull messages if return immediately is enabled.
      * Value is in microseconds
      *
-     * @param $returnImmediatelyPause
+     * @param int $returnImmediatelyPause
      */
     public function setReturnImmediatelyPause($returnImmediatelyPause) {
-        $this->returnImmediatelyPause = $returnImmediatelyPause;
+        $this->returnImmediatelyPause = (int) $returnImmediatelyPause;
     }
 
     /**
@@ -239,6 +239,7 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
         $subscription = $this->getSubscriptionForChannel($channel);
 
         $isSubscriptionLoopActive = true;
+        $isPauseEnabled = $this->returnImmediately && ($this->returnImmediatelyPause > 0);
 
         while ($isSubscriptionLoopActive) {
             $messages = $subscription->pull([
@@ -248,7 +249,7 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
                 'maxMessages' => $this->maxMessages,
                 'returnImmediately' => $this->returnImmediately,
             ]);
-            if ($this->returnImmediately && empty($messages)) {
+            if ($isPauseEnabled && empty($messages)) {
                 usleep($this->returnImmediatelyPause);
                 continue;
             }
