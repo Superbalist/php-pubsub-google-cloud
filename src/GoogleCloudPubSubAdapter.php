@@ -273,6 +273,8 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
      *
      * @param string $channel
      * @param mixed $message
+     *
+     * @return array Array of message IDs.
      */
     public function publish($channel, $message)
     {
@@ -282,7 +284,7 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
         if ($this->backgroundBatching) {
             $topic->batchPublisher()->publish(['data' => $payload]);
         } else {
-            $topic->publish(['data' => $payload]);
+            return $topic->publish(['data' => $payload]);
         }
     }
 
