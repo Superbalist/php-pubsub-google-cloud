@@ -2,6 +2,7 @@
 
 namespace Superbalist\PubSub\GoogleCloud;
 
+use Exception;
 use Google\Cloud\PubSub\Message;
 use Google\Cloud\PubSub\PubSubClient;
 use Google\Cloud\PubSub\Subscription;
@@ -51,12 +52,20 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
     protected $returnImmediatelyPause;
 
     /**
+     * @var boolean
+     */
+    private $alwaysThrowException;
+
+    /**
      * @param PubSubClient $client
      * @param string $clientIdentifier
      * @param bool $autoCreateTopics
      * @param bool $autoCreateSubscriptions
      * @param bool $backgroundBatching
      * @param int $maxMessages
+     * @param bool $returnImmediately
+     * @param int $returnImmediatelyPause
+     * @param bool $alwaysThrowException
      */
     public function __construct(
         PubSubClient $client,
@@ -66,7 +75,8 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
         $backgroundBatching = false,
         $maxMessages = 1000,
         $returnImmediately = false,
-        $returnImmediatelyPause = 500000
+        $returnImmediatelyPause = 500000,
+        $alwaysThrowException = false
     ) {
         $this->client = $client;
         $this->clientIdentifier = $clientIdentifier;
@@ -76,6 +86,7 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
         $this->maxMessages = $maxMessages;
         $this->returnImmediately = $returnImmediately;
         $this->returnImmediatelyPause = (int) $returnImmediatelyPause;
+        $this->alwaysThrowException = $alwaysThrowException;
     }
 
     /**
@@ -229,10 +240,30 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
     }
 
     /**
+     * Always throw exception from user callback function
+     * if set to true message will NOT be acked
+     *
+     * @param bool alwaysThrowException
+     */
+    public function setAlwaysThrowException($alwaysThrowException) {
+        $this->alwaysThrowException = (bool) $alwaysThrowException;
+    }
+
+    /**
+     * Return the always throw exception property
+     *
+     * @return bool
+     */
+    public function getAlwaysThrowException() {
+        return $this->alwaysThrowException;
+    }
+
+    /**
      * Subscribe a handler to a channel.
      *
      * @param string $channel
      * @param callable $handler
+     * @throws Exception
      */
     public function subscribe($channel, callable $handler)
     {
@@ -260,7 +291,13 @@ class GoogleCloudPubSubAdapter implements PubSubAdapterInterface
                 if ($payload === 'unsubscribe') {
                     $isSubscriptionLoopActive = false;
                 } else {
-                    call_user_func($handler, $payload);
+                    try {
+                        call_user_func($handler, $payload);
+                    } catch (Exception $e) {
+                        if ($this->alwaysThrowException) {
+                            throw $e;
+                        }
+                    }
                 }
 
                 $subscription->acknowledge($message);
